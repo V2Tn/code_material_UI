@@ -2,6 +2,7 @@ import React from "react";
 import jobs from "../data/jobs.json";
 import { useParams } from "react-router-dom";
 import { Container, Typography } from "@mui/material";
+import RequireAuth from "../auth/RequireAuth";
 
 function JobDetail() {
   const params = useParams();
@@ -17,9 +18,11 @@ function JobDetail() {
 
   return (
     <Container>
-      <Typography variant="h3" marginTop={10}>
-        {job.title}
-      </Typography>
+      <RequireAuth callback={() => {}}>
+        <Typography variant="h3" marginTop={10}>
+          {job.title}
+        </Typography>
+      </RequireAuth>
     </Container>
   );
 }

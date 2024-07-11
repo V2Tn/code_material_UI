@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useContext } from "react";
 import { styled, alpha } from "@mui/material/styles";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
@@ -6,9 +6,11 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import InputBase from "@mui/material/InputBase";
 import LogoutIcon from "@mui/icons-material/Logout";
+import LoginIcon from "@mui/icons-material/Login";
 import SearchIcon from "@mui/icons-material/Search";
 import { Avatar, Button } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import AuthContext from "../auth/AuthContext";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -47,7 +49,29 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 function SearchAppBar() {
+  const auth = useContext(AuthContext);
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const q = searchParams.get("q");
+
+  const handleLogin = () => {
+    navigate("/login");
+  };
+
+  const handleLogout = () => {
+    auth.signout(() => {
+      navigate("/");
+    });
+  };
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    let formSearch = new FormData(e.currentTarget);
+    let q = formSearch.get("q");
+    console.log(q);
+    setSearchParams({ q: q });
+  };
+
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar
@@ -66,7 +90,7 @@ function SearchAppBar() {
           >
             Job Routing
           </Typography>
-          <Box component="form">
+          <Box component="form" onSubmit={handleSearch}>
             <Search>
               <SearchIconWrapper>
                 <SearchIcon />
@@ -74,19 +98,35 @@ function SearchAppBar() {
               <StyledInputBase
                 name="q"
                 placeholder="Search"
+                defaultValue={q ?? undefined}
                 inputProps={{ "arial-label": "search" }}
               />
             </Search>
           </Box>
           <Box sx={{ flexGrow: 1 }} />
-
-          <Button variant="contained" startIcon={<LogoutIcon />}>
-            Logout
-          </Button>
-          <Avatar
-            src="/images/avatar/1.jpg"
-            sx={{ width: 40, height: 40, ml: 1 }}
-          />
+          {auth?.user ? (
+            <>
+              <Button
+                onClick={handleLogout}
+                variant="contained"
+                startIcon={<LogoutIcon />}
+              >
+                Logout
+              </Button>
+              <Avatar
+                src="/images/avatar/1.jpg"
+                sx={{ width: 40, height: 40, ml: 1 }}
+              />
+            </>
+          ) : (
+            <Button
+              onClick={handleLogin}
+              variant="contained"
+              startIcon={<LoginIcon />}
+            >
+              Login
+            </Button>
+          )}
         </Toolbar>
       </AppBar>
     </Box>

@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useContext } from "react";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
@@ -6,6 +6,7 @@ import { CardActionArea, Stack } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import SkillsPaper from "./SkillsPaper";
 import { styled } from "@mui/material/styles";
+import AuthContext from "../auth/AuthContext";
 
 const CardStyle = styled(Card)(({ theme }) => ({
   boxShadow: "none",
@@ -17,11 +18,21 @@ const CardStyle = styled(Card)(({ theme }) => ({
   margin: "auto",
   backgroundColor: theme.palette.primary.light,
 }));
+
 export default function JobCard({ job }) {
   const navigate = useNavigate();
+  const auth = useContext(AuthContext);
+
+  const handleClick = (e) => {
+    if (auth.user) {
+      navigate(`/job/${job.id}`);
+    } else {
+      navigate("/login");
+    }
+  };
 
   return (
-    <CardStyle onClick={() => navigate(`/job/${job.id}`)}>
+    <CardStyle onClick={handleClick}>
       <CardActionArea sx={{ color: (theme) => theme.palette.common.white }}>
         <Stack
           direction="column"
